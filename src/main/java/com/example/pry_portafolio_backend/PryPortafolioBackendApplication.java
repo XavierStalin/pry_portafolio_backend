@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class PryPortafolioBackendApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(PryPortafolioBackendApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(PryPortafolioBackendApplication.class, args);
+    }
 
 }
