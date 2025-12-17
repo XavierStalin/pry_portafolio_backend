@@ -1,4 +1,4 @@
-package com.example.pry_portafolio_backend.entity;
+package com.example.pry_portafolio_backend.entidades_negocio;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -36,4 +36,16 @@ public class ProgramadorDetalle {
     @Column(name = "det_link_github", length = 512)
     private String linkGithub;
 
+    @Override
+
+    public String toString() {
+        return "ProgramadorDetalle{" +
+                "especialidad='" + especialidad + '\'' +
+                ", biografiaBreve='" + biografiaBreve + '\'' +
+                ", telefono='" + telefono + '\'' +
+                ", linkLinkedin='" + linkLinkedin + '\'' +
+                ", linkGithub='" + linkGithub + '\'' +
+                ", id=" + id +
+                '}';
+    }
 }

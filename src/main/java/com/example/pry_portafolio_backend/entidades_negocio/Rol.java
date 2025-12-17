@@ -1,4 +1,4 @@
-package com.example.pry_portafolio_backend.entity;
+package com.example.pry_portafolio_backend.entidades_negocio;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -19,5 +19,6 @@ public class Rol {
 
     @Column(name = "rol_nombre", nullable = false, length = 50)
     private String nombre;
+
 
 }

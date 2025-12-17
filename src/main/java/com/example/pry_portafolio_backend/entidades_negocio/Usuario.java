@@ -1,16 +1,15 @@
-package com.example.pry_portafolio_backend.entity;
+package com.example.pry_portafolio_backend.entidades_negocio;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "PW_USUARIOS")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 
@@ -52,4 +51,17 @@ public class Usuario {
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
     private ProgramadorDetalle programadorDetalle;
 
+    @Override
+    public String toString() {
+        return "Usuario{" +
+                "id=" + id +
+                ", nombre='" + nombre + '\'' +
+                ", apellido='" + apellido + '\'' +
+                ", email='" + email + '\'' +
+                //", password='" + password + '\'' +
+                ", foto_perfil_url='" + foto_perfil_url + '\'' +
+                ", created_at=" + created_at +
+                ", activo=" + activo +
+                '}';
+    }
 }

@@ -1,4 +1,4 @@
-package com.example.pry_portafolio_backend.entity;
+package com.example.pry_portafolio_backend.entidades_negocio;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
