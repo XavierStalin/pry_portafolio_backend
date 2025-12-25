@@ -1,19 +1,28 @@
-package com.example.pry_portafolio_backend.entidades_negocio;
+package com.example.pry_portafolio_backend.usuario;
 
+import com.example.pry_portafolio_backend.entidades_negocio.ProgramadorDetalle;
+import com.example.pry_portafolio_backend.entidades_negocio.Rol;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
 
 @Entity
+@Builder
 @Table(name = "PW_USUARIOS")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class Usuario {
+public class Usuario implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,6 +50,7 @@ public class Usuario {
 
     @Column(name = "usu_activo", nullable = false)
     @ColumnDefault("true")
+    @Builder.Default
     private Boolean activo = true;
 
     // Relaciones
@@ -51,17 +61,14 @@ public class Usuario {
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
     private ProgramadorDetalle programadorDetalle;
 
+
     @Override
-    public String toString() {
-        return "Usuario{" +
-                "id=" + id +
-                ", nombre='" + nombre + '\'' +
-                ", apellido='" + apellido + '\'' +
-                ", email='" + email + '\'' +
-                //", password='" + password + '\'' +
-                ", foto_perfil_url='" + foto_perfil_url + '\'' +
-                ", created_at=" + created_at +
-                ", activo=" + activo +
-                '}';
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(rol.getNombre().toUpperCase()));
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
     }
 }

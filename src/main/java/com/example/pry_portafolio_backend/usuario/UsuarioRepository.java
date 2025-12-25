@@ -1,11 +1,14 @@
-package com.example.pry_portafolio_backend.obj_acceso_datos;
+package com.example.pry_portafolio_backend.usuario;
 
-import com.example.pry_portafolio_backend.entidades_negocio.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import javax.swing.text.html.Option;
 import java.util.List;
+import java.util.Optional;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
+
+    Optional<Usuario> findByEmail(String email);
 
     boolean existsUsuarioByEmail(String email);
 

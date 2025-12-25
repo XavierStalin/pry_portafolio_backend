@@ -1,11 +1,6 @@
-package com.example.pry_portafolio_backend.obj_de_negocio.impl;
+package com.example.pry_portafolio_backend.usuario;
 
-import com.example.pry_portafolio_backend.dto.RegistroUsuarioDTO;
 import com.example.pry_portafolio_backend.entidades_negocio.Rol;
-import com.example.pry_portafolio_backend.entidades_negocio.Usuario;
-import com.example.pry_portafolio_backend.obj_acceso_datos.RolRepository;
-import com.example.pry_portafolio_backend.obj_acceso_datos.UsuarioRepository;
-import com.example.pry_portafolio_backend.obj_de_negocio.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,23 +15,22 @@ public class UsuarioServiceImpl implements UsuarioService {
 
 
     @Override
-    public Usuario crearUsuario(RegistroUsuarioDTO datos) {
+    public Usuario crearUsuario(final UsuarioResponse datos) {
 
 
-        if (usuarioRepository.existsUsuarioByEmail(datos.getEmail())) {
+        if (usuarioRepository.existsUsuarioByEmail(datos.email())) {
             throw new RuntimeException("El email ya está registrado");
         }
 
         Usuario nuevoUsuario = new Usuario();
-        nuevoUsuario.setNombre(datos.getNombre());
-        nuevoUsuario.setApellido(datos.getApellido());
-        nuevoUsuario.setEmail(datos.getEmail());
-        nuevoUsuario.setPassword(datos.getPassword());
+        nuevoUsuario.setNombre(datos.nombre());
+        nuevoUsuario.setApellido(datos.apellido());
+        nuevoUsuario.setEmail(datos.email());
+        nuevoUsuario.setPassword(datos.password());
 
         nuevoUsuario.setActivo(true);
-
-        Rol rolCliente = rolRepository.findByNombre("USER");
-        nuevoUsuario.setRol(rolCliente);
+//        Rol rolCliente = rolRepository.findByNombre("USER");
+//        nuevoUsuario.setRol(rolCliente);
 
         return usuarioRepository.save(nuevoUsuario);
     }

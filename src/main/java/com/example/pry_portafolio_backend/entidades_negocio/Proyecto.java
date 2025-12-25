@@ -1,5 +1,6 @@
 package com.example.pry_portafolio_backend.entidades_negocio;
 
+import com.example.pry_portafolio_backend.usuario.Usuario;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
