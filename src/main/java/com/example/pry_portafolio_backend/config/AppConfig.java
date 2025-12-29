@@ -21,21 +21,18 @@ public class AppConfig {
     private final UsuarioRepository repository;
 
     @Bean
-    public UserDetailsService userDetailsService(){
-        return username -> {
-            final Usuario usuario = repository.findByEmail(username)
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-            return org.springframework.security.core.userdetails.User.builder()
-                    .username(usuario.getEmail())
-                    .password(usuario.getPassword())
-                    .authorities(usuario.getRol().getNombre())
-                    .build();
-        };
+    public UserDetailsService userDetailsService() {
+        // CORRECCIÓN: Devolvemos directamente el objeto Usuario del repositorio.
+        // Como tu clase Usuario ya implementa UserDetails, esto funciona automático.
+        // Esto evita el error de .getNombre() que tendrías con los Enums.
+        return username -> repository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
     @Bean
     public AuthenticationProvider authenticationProvider(){
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService());
+
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }

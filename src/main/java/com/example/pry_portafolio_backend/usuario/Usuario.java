@@ -1,30 +1,27 @@
 package com.example.pry_portafolio_backend.usuario;
 
 import com.example.pry_portafolio_backend.entidades_negocio.ProgramadorDetalle;
-import com.example.pry_portafolio_backend.entidades_negocio.Rol;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
-@Entity
+@Data
 @Builder
-@Table(name = "PW_USUARIOS")
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name = "pw_user")
 
 public class Usuario implements UserDetails {
 
-    @Id
+    @Id@ToString.Exclude
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "usu_id")
     private Integer id;
@@ -53,22 +50,21 @@ public class Usuario implements UserDetails {
     @Builder.Default
     private Boolean activo = true;
 
-    // Relaciones
-    @ManyToOne
-    @JoinColumn(name = "usu_rol_id", nullable = false)
-    private Rol rol;
+    @Enumerated(EnumType.STRING)
+    private Role rol;
 
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private ProgramadorDetalle programadorDetalle;
 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(rol.getNombre().toUpperCase()));
+        return List.of();
     }
 
     @Override
     public String getUsername() {
-        return this.email;
+        return "";
     }
 }

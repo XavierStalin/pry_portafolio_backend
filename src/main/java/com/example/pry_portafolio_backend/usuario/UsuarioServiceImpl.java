@@ -1,9 +1,8 @@
 package com.example.pry_portafolio_backend.usuario;
 
-import com.example.pry_portafolio_backend.entidades_negocio.Rol;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
+import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.List;
 
 @Service
@@ -11,12 +10,11 @@ import java.util.List;
 public class UsuarioServiceImpl implements UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
-    private final RolRepository rolRepository;
-
+    // private final RolRepository rolRepository; // <--- ELIMINADO (Ya no hace falta)
+    private final PasswordEncoder passwordEncoder; // <--- AGREGADO (Para que el login funcione)
 
     @Override
     public Usuario crearUsuario(final UsuarioResponse datos) {
-
 
         if (usuarioRepository.existsUsuarioByEmail(datos.email())) {
             throw new RuntimeException("El email ya está registrado");
@@ -26,11 +24,15 @@ public class UsuarioServiceImpl implements UsuarioService {
         nuevoUsuario.setNombre(datos.nombre());
         nuevoUsuario.setApellido(datos.apellido());
         nuevoUsuario.setEmail(datos.email());
-        nuevoUsuario.setPassword(datos.password());
+
+        // IMPORTANTE: Encriptar password, si no, este usuario no podrá hacer Login
+        nuevoUsuario.setPassword(passwordEncoder.encode(datos.password()));
 
         nuevoUsuario.setActivo(true);
-//        Rol rolCliente = rolRepository.findByNombre("USER");
-//        nuevoUsuario.setRol(rolCliente);
+
+        // --- CAMBIO PRINCIPAL AQUI ---
+        // Ya no buscas en DB, asignas el valor directo del Enum
+        nuevoUsuario.setRol(Role.USER);
 
         return usuarioRepository.save(nuevoUsuario);
     }
@@ -47,9 +49,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    //@Transactional
     public void eliminarUsuario(Integer id) {
-
         Usuario usuario = usuarioRepository.findById(id).
                 orElseThrow(()-> new RuntimeException("Error al eliminar el usuario"));
 
