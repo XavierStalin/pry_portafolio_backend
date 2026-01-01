@@ -1,21 +1,19 @@
 package com.example.pry_portafolio_backend.auth.repository;
 
-import com.example.pry_portafolio_backend.usuario.Usuario;
+import com.example.pry_portafolio_backend.usuario.entity.Usuario;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Fetch;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "tokens")
+@Entity(name = "PW_Tokens")
 
 public class Token {
-
 
     public enum TokenType{
         BEARER

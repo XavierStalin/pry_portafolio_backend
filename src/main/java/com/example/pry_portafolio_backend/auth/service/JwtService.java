@@ -1,6 +1,6 @@
 package com.example.pry_portafolio_backend.auth.service;
 
-import com.example.pry_portafolio_backend.usuario.Usuario;
+import com.example.pry_portafolio_backend.usuario.entity.Usuario;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.Map;
-import io.jsonwebtoken.Jwts;
 import java.util.function.Function;
 
 @Service
@@ -39,7 +38,10 @@ public class JwtService {
     private String buildToken(final Usuario usuario, final long expiration){
         return Jwts.builder()
                 .setId(usuario.getId().toString())
-                .addClaims(Map.of("name", usuario.getNombre()))
+                .addClaims(Map.of(
+                        "name", usuario.getNombre(),
+                        "role", usuario.getRol()
+                ))
                 .setSubject(usuario.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis()+ expiration))
@@ -61,7 +63,7 @@ public class JwtService {
     }
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(getSignInKey()) // El método que ya tenías
+                .setSigningKey(getSignInKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();

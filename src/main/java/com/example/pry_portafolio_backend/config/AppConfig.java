@@ -1,7 +1,6 @@
 package com.example.pry_portafolio_backend.config;
 
-import com.example.pry_portafolio_backend.usuario.Usuario;
-import com.example.pry_portafolio_backend.usuario.UsuarioRepository;
+import com.example.pry_portafolio_backend.usuario.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,18 +21,16 @@ public class AppConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        // CORRECCIÓN: Devolvemos directamente el objeto Usuario del repositorio.
-        // Como tu clase Usuario ya implementa UserDetails, esto funciona automático.
-        // Esto evita el error de .getNombre() que tendrías con los Enums.
         return username -> repository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
     @Bean
     public AuthenticationProvider authenticationProvider(){
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService());
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
 
-        authProvider.setPasswordEncoder(passwordEncoder());
+        authProvider.setUserDetailsService(userDetailsService()); // <--- USA EL SERVICE
+        authProvider.setPasswordEncoder(passwordEncoder());       // <--- USA EL ENCODER
         return authProvider;
     }
 

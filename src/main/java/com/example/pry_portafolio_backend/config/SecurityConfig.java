@@ -24,7 +24,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    // 1. Debes declarar esta variable aquí arriba para que no salga en rojo abajo
     private final JwtAuthFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
     private final TokenRepository tokenRepository;
@@ -34,8 +33,25 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req ->
-                        req.requestMatchers(org.springframework.http.HttpMethod.POST, "/auth/**").permitAll() // ESPECIFICA POST
-                                .requestMatchers("/auth/**").permitAll() // Y EL RESTO DE /auth/
+                        // 1. RUTAS PÚBLICAS
+                        req.requestMatchers("/auth/**").permitAll()
+                                .requestMatchers(
+                                        "/v3/api-docs/**",
+                                        "/swagger-ui/**",
+                                        "/swagger-ui.html",
+                                        "/swagger-resources/**",
+                                        "/webjars/**"
+                                ).permitAll()
+
+                                // 2. RUTAS DEL ADMINISTRADOR (Solo ADMIN)
+                                // Aquí proteges todo lo que empiece con /api/admin/
+                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+                                // 3. RUTAS DEL PROGRAMADOR (Solo DEV)
+                                // Aquí lo que el programador hace por sí mismo
+                                .requestMatchers("/api/programador/**").hasRole("DEV")
+
+                                // 4. CUALQUIER OTRA PETICIÓN (Debe estar logueado)
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -45,8 +61,7 @@ public class SecurityConfig {
                         logout.logoutUrl("/auth/logout")
                                 .addLogoutHandler(this::logout)
                                 .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
-                )
-        ;
+                );
 
         return http.build();
     }

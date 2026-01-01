@@ -5,9 +5,9 @@ import com.example.pry_portafolio_backend.auth.controller.RegisterRequest;
 import com.example.pry_portafolio_backend.auth.controller.TokenResponse;
 import com.example.pry_portafolio_backend.auth.repository.Token;
 import com.example.pry_portafolio_backend.auth.repository.TokenRepository;
-import com.example.pry_portafolio_backend.usuario.Role;
-import com.example.pry_portafolio_backend.usuario.Usuario;
-import com.example.pry_portafolio_backend.usuario.UsuarioRepository;
+import com.example.pry_portafolio_backend.usuario.entity.Role;
+import com.example.pry_portafolio_backend.usuario.entity.Usuario;
+import com.example.pry_portafolio_backend.usuario.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,16 +28,16 @@ public class AuthService {
 
     public TokenResponse register(RegisterRequest request){
 
-        // ELIMINADO: Toda la lógica de buscar el rol en la DB
-        // Rol defaultRol = rolRepository.findByNombre("ROLE_USER")...
+        if (userRepository.existsByEmail(request.email())){
+            throw new RuntimeException("El correo electrónico ya está registrado.");
+        }
 
         var user = Usuario.builder()
                 .nombre(request.nombre())
                 .apellido(request.apellido())
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
-                .activo(true)
-                .rol(Role.USER) // <--- ASIGNACIÓN DIRECTA DEL ENUM
+                .rol(Role.USER)
                 .build();
 
         var savedUser = userRepository.save(user);
@@ -68,8 +68,8 @@ public class AuthService {
         var jwtToken = jwtService.generateToken(usuario);
         var refreshToken = jwtService.generateRefreshToken(usuario);
 
-        revokeAllUserTokens(usuario); // 1. Mata los tokens viejos
-        savedUserToken(usuario, jwtToken); // 2. IMPORTANTE: Guarda el nuevo token (Esto faltaba antes)
+        revokeAllUserTokens(usuario);
+        savedUserToken(usuario, jwtToken);
 
         return new TokenResponse(jwtToken, refreshToken);
     }
