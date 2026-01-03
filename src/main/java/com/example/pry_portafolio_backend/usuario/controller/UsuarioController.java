@@ -4,6 +4,7 @@ import com.example.pry_portafolio_backend.usuario.dto.ProgramadorRequest;
 import com.example.pry_portafolio_backend.usuario.dto.ProgramadorResponse;
 import com.example.pry_portafolio_backend.usuario.dto.UsuarioResponse;
 import com.example.pry_portafolio_backend.usuario.service.UsuarioService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class UsuarioController {
 
     // CREAR
     @PostMapping
-    public ResponseEntity<ProgramadorResponse> crear(@RequestBody ProgramadorRequest request) {
+    public ResponseEntity<ProgramadorResponse> crear(@Valid @RequestBody ProgramadorRequest request) {
         // Retornamos 201 Created
         System.out.println("Entrando a crear el programador");
         return new ResponseEntity<>(programadorService.agregarProgramador(request), HttpStatus.CREATED);

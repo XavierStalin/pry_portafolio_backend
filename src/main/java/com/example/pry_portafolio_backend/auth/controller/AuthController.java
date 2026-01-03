@@ -1,6 +1,7 @@
 package com.example.pry_portafolio_backend.auth.controller;
 
 import com.example.pry_portafolio_backend.auth.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -14,13 +15,13 @@ public class AuthController {
     private final AuthService service;
 
     @PostMapping("/register")
-    public ResponseEntity<TokenResponse> registrar(@RequestBody final RegisterRequest request){
+    public ResponseEntity<TokenResponse> registrar(@Valid @RequestBody final RegisterRequest request){
         final TokenResponse token = service.register(request);
         return ResponseEntity.ok(token);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> authenticate(@RequestBody final LoginRequest request){
+    public ResponseEntity<TokenResponse> authenticate(@Valid @RequestBody final LoginRequest request){
         final TokenResponse token = service.login(request);
         return ResponseEntity.ok(token);
     }
