@@ -3,21 +3,25 @@ package com.example.pry_portafolio_backend.asesoria.service;
 import com.example.pry_portafolio_backend.asesoria.dto.AsesoriaRequest;
 import com.example.pry_portafolio_backend.asesoria.dto.AsesoriaResponse;
 import com.example.pry_portafolio_backend.asesoria.entity.Asesoria;
+import com.example.pry_portafolio_backend.asesoria.entity.AdvisoryStatus;
 import com.example.pry_portafolio_backend.asesoria.repository.AsesoriaRepository;
 import com.example.pry_portafolio_backend.usuario.entity.Usuario;
 import com.example.pry_portafolio_backend.usuario.repository.UsuarioRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class AsesoriaServiceImpl implements AsesoriaService {
 
     private final AsesoriaRepository asesoriaRepository;
     private final UsuarioRepository usuarioRepository;
+
+    public AsesoriaServiceImpl(AsesoriaRepository asesoriaRepository, UsuarioRepository usuarioRepository) {
+        this.asesoriaRepository = asesoriaRepository;
+        this.usuarioRepository = usuarioRepository;
+    }
 
     @Override
     public List<AsesoriaResponse> listarAsesorias() {
@@ -65,14 +69,14 @@ public class AsesoriaServiceImpl implements AsesoriaService {
         asesoria.setFechaHoraInicio(request.fechaHoraInicio());
         asesoria.setMotivoConsulta(request.motivoConsulta());
         asesoria.setDuracionMinutos(request.duracionMinutos() != null ? request.duracionMinutos() : 60);
-        asesoria.setEstado("PENDIENTE");
+        asesoria.setEstado(AdvisoryStatus.PENDIENTE);
 
         return mapToResponse(asesoriaRepository.save(asesoria));
     }
 
     @Override
     @Transactional
-    public AsesoriaResponse responderAsesoria(Integer id, String mensaje, String link, String estado) {
+    public AsesoriaResponse responderAsesoria(Integer id, String mensaje, String link, AdvisoryStatus estado) {
         Asesoria asesoria = asesoriaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Asesoría no encontrada"));
 

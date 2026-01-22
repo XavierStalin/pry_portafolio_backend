@@ -3,8 +3,8 @@ package com.example.pry_portafolio_backend.asesoria.controller;
 import com.example.pry_portafolio_backend.asesoria.dto.AsesoriaRequest;
 import com.example.pry_portafolio_backend.asesoria.dto.AsesoriaResponse;
 import com.example.pry_portafolio_backend.asesoria.service.AsesoriaService;
+import com.example.pry_portafolio_backend.asesoria.entity.AdvisoryStatus;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,10 +13,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/asesorias")
-@RequiredArgsConstructor
 public class AsesoriaController {
 
     private final AsesoriaService asesoriaService;
+
+    public AsesoriaController(AsesoriaService asesoriaService) {
+        this.asesoriaService = asesoriaService;
+    }
 
     @GetMapping
     public ResponseEntity<List<AsesoriaResponse>> listar() {
@@ -48,7 +51,7 @@ public class AsesoriaController {
             @PathVariable Integer id,
             @RequestParam String mensaje,
             @RequestParam String link,
-            @RequestParam String estado) {
+            @RequestParam AdvisoryStatus estado) {
         return ResponseEntity.ok(asesoriaService.responderAsesoria(id, mensaje, link, estado));
     }
 

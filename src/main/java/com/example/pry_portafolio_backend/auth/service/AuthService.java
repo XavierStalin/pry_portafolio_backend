@@ -8,7 +8,6 @@ import com.example.pry_portafolio_backend.auth.repository.TokenRepository;
 import com.example.pry_portafolio_backend.usuario.entity.Role;
 import com.example.pry_portafolio_backend.usuario.entity.Usuario;
 import com.example.pry_portafolio_backend.usuario.repository.UsuarioRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class AuthService {
 
     private final UsuarioRepository userRepository;
@@ -25,6 +23,14 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+
+    public AuthService(UsuarioRepository userRepository, TokenRepository tokenRepository, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager) {
+        this.userRepository = userRepository;
+        this.tokenRepository = tokenRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
+        this.authenticationManager = authenticationManager;
+    }
 
     public TokenResponse register(RegisterRequest request){
 

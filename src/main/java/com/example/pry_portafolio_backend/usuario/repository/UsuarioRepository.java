@@ -1,6 +1,6 @@
 package com.example.pry_portafolio_backend.usuario.repository;
 
-import com.example.pry_portafolio_backend.usuario.dto.ProgramadorRequest;
+
 import com.example.pry_portafolio_backend.usuario.entity.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 

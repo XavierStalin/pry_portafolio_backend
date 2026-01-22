@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8081
 
 application:
   security:
@@ -13,14 +13,15 @@ application:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/proyecto_portafolio_db
+    url: jdbc:postgresql://localhost:5432/pruebaPW
     username: postgres
     password: system
     driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
     properties:
       hibernate:

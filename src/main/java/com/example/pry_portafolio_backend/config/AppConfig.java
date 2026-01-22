@@ -1,7 +1,6 @@
 package com.example.pry_portafolio_backend.config;
 
 import com.example.pry_portafolio_backend.usuario.repository.UsuarioRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,10 +13,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
-@RequiredArgsConstructor
 public class AppConfig {
 
     private final UsuarioRepository repository;
+
+    public AppConfig(UsuarioRepository repository) {
+        this.repository = repository;
+    }
 
     @Bean
     public UserDetailsService userDetailsService() {
@@ -27,12 +29,9 @@ public class AppConfig {
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        // CORRECCIÓN: Pasar el userDetailsService() directamente al constructor
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService());
-
-        // El PasswordEncoder se sigue poniendo aparte (por ahora)
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService());
         authProvider.setPasswordEncoder(passwordEncoder());
-
         return authProvider;
     }
 
