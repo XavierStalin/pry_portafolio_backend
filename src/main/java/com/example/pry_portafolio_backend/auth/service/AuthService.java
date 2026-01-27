@@ -8,6 +8,7 @@ import com.example.pry_portafolio_backend.auth.repository.TokenRepository;
 import com.example.pry_portafolio_backend.usuario.entity.Role;
 import com.example.pry_portafolio_backend.usuario.entity.Usuario;
 import com.example.pry_portafolio_backend.usuario.repository.UsuarioRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class AuthService {
 
     private final UsuarioRepository userRepository;
@@ -24,17 +26,10 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthService(UsuarioRepository userRepository, TokenRepository tokenRepository, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager) {
-        this.userRepository = userRepository;
-        this.tokenRepository = tokenRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtService = jwtService;
-        this.authenticationManager = authenticationManager;
-    }
 
-    public TokenResponse register(RegisterRequest request){
+    public TokenResponse register(RegisterRequest request) {
 
-        if (userRepository.existsByEmail(request.email())){
+        if (userRepository.existsByEmail(request.email())) {
             throw new RuntimeException("El correo electrónico ya está registrado.");
         }
 
@@ -50,12 +45,13 @@ public class AuthService {
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
 
-        savedUserToken(savedUser, jwtToken); // Guarda el token del registro
+        savedUserToken(savedUser, jwtToken);// Guardamos el token de registro
+        savedUserToken(savedUser, refreshToken); // Guardamos el refresh token generado
 
         return new TokenResponse(jwtToken, refreshToken);
     }
 
-    public TokenResponse login(LoginRequest request){
+    public TokenResponse login(LoginRequest request) {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -83,8 +79,8 @@ public class AuthService {
     private void revokeAllUserTokens(final Usuario usuario) {
         final List<Token> validUserTokens = tokenRepository
                 .findAllValidTokensByUsuarioId(usuario.getId());
-        if (!validUserTokens.isEmpty()){
-            for (final Token token: validUserTokens){
+        if (!validUserTokens.isEmpty()) {
+            for (final Token token : validUserTokens) {
                 token.setExpired(true);
                 token.setRevoked(true);
             }
@@ -92,7 +88,7 @@ public class AuthService {
         }
     }
 
-    private void savedUserToken(Usuario usuario, String jwtToken){
+    private void savedUserToken(Usuario usuario, String jwtToken) {
         var token = Token.builder()
                 .usuario(usuario)
                 .token(jwtToken)
@@ -103,8 +99,41 @@ public class AuthService {
         tokenRepository.save(token);
     }
 
-    public TokenResponse refreshToken(final String authHeader){
-        // Aquí implementarás la lógica de refresh token luego
-        return null;
+    public TokenResponse refreshToken(final String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Token inválido");
+        }
+
+        final String refreshToken = authHeader.substring(7);
+        final String userEmail = jwtService.extractUsername(refreshToken);
+
+        if (userEmail != null) {
+            var usuario = userRepository.findByEmail(userEmail)
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+            var tokenEnBaseDeDatos = tokenRepository.findByToken(refreshToken)
+                    .orElseThrow(() -> new RuntimeException("El token no existe en la base de datos"));
+
+            if (tokenEnBaseDeDatos.isExpired() || tokenEnBaseDeDatos.isRevoked()) {
+                throw new RuntimeException("El token ha sido revocado o expiró (Logout previo)");
+            }
+
+            if (jwtService.isTokenValid(refreshToken, usuario)) {
+
+                var accessToken = jwtService.generateToken(usuario);
+
+                revokeAllUserTokens(usuario);
+
+                savedUserToken(usuario, accessToken);
+
+
+                var newRefreshToken = jwtService.generateRefreshToken(usuario);
+
+                return new TokenResponse(accessToken, newRefreshToken);
+            }
+        }
+
+        throw new RuntimeException("Refresh Token inválido o expirado");
+
     }
 }

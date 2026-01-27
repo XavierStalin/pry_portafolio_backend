@@ -1,4 +1,6 @@
 package com.example.pry_portafolio_backend.config;
+import com.example.pry_portafolio_backend.auth.service.LogoutService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpMethod;
 import com.example.pry_portafolio_backend.auth.repository.Token;
 import com.example.pry_portafolio_backend.auth.repository.TokenRepository;
@@ -20,17 +22,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
     private final TokenRepository tokenRepository;
-
-    public SecurityConfig(JwtAuthFilter jwtAuthFilter, AuthenticationProvider authenticationProvider, TokenRepository tokenRepository) {
-        this.jwtAuthFilter = jwtAuthFilter;
-        this.authenticationProvider = authenticationProvider;
-        this.tokenRepository = tokenRepository;
-    }
+    private final LogoutService logoutService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(final HttpSecurity http) throws Exception {
@@ -63,33 +61,11 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .logout(logout ->
                         logout.logoutUrl("/auth/logout")
-                                .addLogoutHandler(this::logout)
+                                .addLogoutHandler(logoutService)
                                 .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
                 );
 
         return http.build();
-    }
-
-
-    private void logout(
-            final HttpServletRequest request, final HttpServletResponse response,
-            final Authentication authentication
-    ) {
-
-        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return;
-        }
-
-        final String jwt = authHeader.substring(7);
-        final Token storedToken = tokenRepository.findByToken(jwt)
-                .orElse(null);
-        if (storedToken != null) {
-            storedToken.setExpired(true);
-            storedToken.setRevoked(true);
-            tokenRepository.save(storedToken);
-            SecurityContextHolder.clearContext();
-        }
     }
 
 }

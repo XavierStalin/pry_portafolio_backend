@@ -1,6 +1,8 @@
 package com.example.pry_portafolio_backend.config;
 
 import com.example.pry_portafolio_backend.usuario.repository.UsuarioRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,13 +15,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
+@RequiredArgsConstructor
 public class AppConfig {
 
     private final UsuarioRepository repository;
-
-    public AppConfig(UsuarioRepository repository) {
-        this.repository = repository;
-    }
 
     @Bean
     public UserDetailsService userDetailsService() {
@@ -34,8 +33,6 @@ public class AppConfig {
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
-
-
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception{

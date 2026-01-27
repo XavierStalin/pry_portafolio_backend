@@ -1,6 +1,5 @@
 package com.example.pry_portafolio_backend.auth.repository;
 
-import io.micrometer.observation.ObservationFilter;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

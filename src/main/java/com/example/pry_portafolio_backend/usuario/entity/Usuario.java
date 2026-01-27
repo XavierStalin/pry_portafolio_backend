@@ -1,6 +1,7 @@
 package com.example.pry_portafolio_backend.usuario.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
@@ -11,6 +12,11 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "PW_USUARIOS")
 public class Usuario implements UserDetails {
@@ -44,18 +50,7 @@ public class Usuario implements UserDetails {
     @Column(name = "rol", nullable = false)
     private Role rol;
 
-    public Usuario() {}
 
-    public Usuario(Integer id, String nombre, String apellido, String email, String password, LocalDateTime createdAt, LocalDateTime updatedAt, Role rol) {
-        this.id = id;
-        this.nombre = nombre;
-        this.apellido = apellido;
-        this.email = email;
-        this.password = password;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.rol = rol;
-    }
 
     public static UsuarioBuilder builder() {
         return new UsuarioBuilder();
@@ -84,21 +79,7 @@ public class Usuario implements UserDetails {
         }
     }
 
-    public Integer getId() { return id; }
-    public void setId(Integer id) { this.id = id; }
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
-    public String getApellido() { return apellido; }
-    public void setApellido(String apellido) { this.apellido = apellido; }
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-    public void setPassword(String password) { this.password = password; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
-    public Role getRol() { return rol; }
-    public void setRol(Role rol) { this.rol = rol; }
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

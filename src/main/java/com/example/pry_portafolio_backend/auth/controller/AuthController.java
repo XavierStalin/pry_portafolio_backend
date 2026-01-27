@@ -2,19 +2,17 @@ package com.example.pry_portafolio_backend.auth.controller;
 
 import com.example.pry_portafolio_backend.auth.service.AuthService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
     private final AuthService service;
-
-    public AuthController(AuthService service) {
-        this.service = service;
-    }
 
     @PostMapping("/register")
     public ResponseEntity<TokenResponse> registrar(@Valid @RequestBody final RegisterRequest request){
