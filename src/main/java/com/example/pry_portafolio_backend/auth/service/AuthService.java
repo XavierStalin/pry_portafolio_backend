@@ -6,6 +6,7 @@ import com.example.pry_portafolio_backend.auth.controller.TokenResponse;
 import com.example.pry_portafolio_backend.auth.repository.Token;
 import com.example.pry_portafolio_backend.auth.repository.TokenRepository;
 import com.example.pry_portafolio_backend.usuario.entity.Role;
+import com.example.pry_portafolio_backend.usuario.entity.AuthProvider;
 import com.example.pry_portafolio_backend.usuario.entity.Usuario;
 import com.example.pry_portafolio_backend.usuario.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
@@ -75,6 +76,63 @@ public class AuthService {
 
         return new TokenResponse(jwtToken, refreshToken);
     }
+
+    public TokenResponse loginWithFirebase(String idToken) {
+        try {
+            var decoded = com.google.firebase.auth.FirebaseAuth.getInstance().verifyIdToken(idToken);
+
+            String email = decoded.getEmail();
+            String name = (String) decoded.getClaims().getOrDefault("name", "Usuario Google");
+
+            if (email == null || email.isBlank()) {
+                throw new RuntimeException("Firebase token no contiene email");
+            }
+
+            var existingOpt = userRepository.findByEmail(email);
+            Usuario usuario;
+
+            if (existingOpt.isPresent()) {
+                usuario = existingOpt.get();
+
+                if (usuario.getAuthProvider() == AuthProvider.LOCAL) {
+                    throw new RuntimeException("Este email está registrado con contraseña. Usa login normal.");
+                }
+
+                // Si es GOOGLE, permitimos login
+            } else {
+                // Crear nuevo usuario GOOGLE
+                String[] parts = name.trim().split("\\s+");
+                String nombre = parts.length > 0 ? parts[0] : "Usuario";
+                String apellido = parts.length > 1 ? String.join(" ", java.util.Arrays.copyOfRange(parts, 1, parts.length)) : "-";
+
+                usuario = Usuario.builder()
+                        .nombre(nombre)
+                        .apellido(apellido)
+                        .email(email)
+                        .password(null)
+                        .rol(Role.USER)
+                        .authProvider(AuthProvider.GOOGLE)
+                        .build();
+
+                usuario = userRepository.save(usuario);
+            }
+
+            var jwtToken = jwtService.generateToken(usuario);
+            var refreshToken = jwtService.generateRefreshToken(usuario);
+
+            revokeAllUserTokens(usuario);
+            savedUserToken(usuario, jwtToken);
+
+            return new TokenResponse(jwtToken, refreshToken);
+
+        } catch (com.google.firebase.auth.FirebaseAuthException e) {
+            throw new RuntimeException("Token de Firebase inválido o expirado", e);
+        }
+    }
+
+
+
+
 
     private void revokeAllUserTokens(final Usuario usuario) {
         final List<Token> validUserTokens = tokenRepository

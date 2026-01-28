@@ -13,5 +13,6 @@ public interface AsesoriaService {
     AsesoriaResponse obtenerAsesoria(Integer id);
     AsesoriaResponse solicitarAsesoria(AsesoriaRequest request);
     AsesoriaResponse responderAsesoria(Integer id, String mensaje, String link, AdvisoryStatus estado);
+    AsesoriaResponse actualizarAsesoria(Integer id, AsesoriaRequest request);
     void eliminarAsesoria(Integer id);
 }

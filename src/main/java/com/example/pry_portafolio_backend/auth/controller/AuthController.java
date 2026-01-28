@@ -26,9 +26,17 @@ public class AuthController {
         return ResponseEntity.ok(token);
     }
 
+    @PostMapping("/firebase")
+    public ResponseEntity<TokenResponse> firebaseLogin(@Valid @RequestBody FirebaseLoginRequest request) {
+        return ResponseEntity.ok(service.loginWithFirebase(request.idToken()));
+    }
+
+
     @PostMapping("/refresh")
     public TokenResponse refreshToken(@RequestHeader(HttpHeaders.AUTHORIZATION) final String authHeader){
         return service.refreshToken(authHeader);
     }
+
+
 
 }

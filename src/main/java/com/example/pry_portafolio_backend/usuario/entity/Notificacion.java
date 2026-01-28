@@ -1,8 +1,15 @@
 package com.example.pry_portafolio_backend.usuario.entity;
+
 import jakarta.persistence.*;
+import lombok.*; // Importación de Lombok
 import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
+@Getter // Genera todos los getters
+@Setter // Genera todos los setters
+@NoArgsConstructor // Genera constructor vacío (necesario para JPA)
+@AllArgsConstructor // Genera constructor con todos los campos
+@Builder // Permite usar el patrón Builder: Notificacion.builder()...build()
 @Entity
 @Table(name = "PW_NOTIFICACIONES")
 public class Notificacion {
@@ -14,10 +21,11 @@ public class Notificacion {
 
     @ManyToOne
     @JoinColumn(name = "not_usuario_id", nullable = false)
-    private Usuario usuario; // Who received it
+    private Usuario usuario;
 
-    @Column(name = "not_tipo", length = 20)
-    private String tipo; // EMAIL, WHATSAPP
+    @Enumerated(EnumType.STRING)
+    @Column(name = "not_tipo", nullable = false)
+    private NotificationType tipo; // Asegúrate de tener este Enum definido
 
     @Column(name = "not_mensaje", columnDefinition = "TEXT")
     private String mensaje;
@@ -26,30 +34,7 @@ public class Notificacion {
     @Column(name = "not_fecha_envio", nullable = false, updatable = false)
     private LocalDateTime fechaEnvio;
 
+    @Builder.Default // Evita que Lombok ignore el valor por defecto al usar @Builder
     @Column(name = "not_exitoso")
     private Boolean exitoso = true;
-
-    public Notificacion() {}
-
-    public Notificacion(Integer id, Usuario usuario, String tipo, String mensaje, LocalDateTime fechaEnvio, Boolean exitoso) {
-        this.id = id;
-        this.usuario = usuario;
-        this.tipo = tipo;
-        this.mensaje = mensaje;
-        this.fechaEnvio = fechaEnvio;
-        this.exitoso = exitoso;
-    }
-
-    public Integer getId() { return id; }
-    public void setId(Integer id) { this.id = id; }
-    public Usuario getUsuario() { return usuario; }
-    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
-    public String getTipo() { return tipo; }
-    public void setTipo(String tipo) { this.tipo = tipo; }
-    public String getMensaje() { return mensaje; }
-    public void setMensaje(String mensaje) { this.mensaje = mensaje; }
-    public LocalDateTime getFechaEnvio() { return fechaEnvio; }
-    public void setFechaEnvio(LocalDateTime fechaEnvio) { this.fechaEnvio = fechaEnvio; }
-    public Boolean getExitoso() { return exitoso; }
-    public void setExitoso(Boolean exitoso) { this.exitoso = exitoso; }
 }

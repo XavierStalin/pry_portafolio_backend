@@ -55,6 +55,13 @@ public class AsesoriaController {
         return ResponseEntity.ok(asesoriaService.responderAsesoria(id, mensaje, link, estado));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<AsesoriaResponse> actualizar(
+            @PathVariable Integer id,
+            @Valid @RequestBody AsesoriaRequest request) {
+        return ResponseEntity.ok(asesoriaService.actualizarAsesoria(id, request));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
         asesoriaService.eliminarAsesoria(id);

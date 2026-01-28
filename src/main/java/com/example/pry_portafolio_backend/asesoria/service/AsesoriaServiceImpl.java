@@ -89,6 +89,35 @@ public class AsesoriaServiceImpl implements AsesoriaService {
 
     @Override
     @Transactional
+    public AsesoriaResponse actualizarAsesoria(Integer id, AsesoriaRequest request) {
+        Asesoria asesoria = asesoriaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Asesoría no encontrada"));
+
+        if (request.clienteEmail() != null) {
+            Usuario cliente = usuarioRepository.findByEmail(request.clienteEmail())
+                    .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+            asesoria.setCliente(cliente);
+        }
+        if (request.programadorEmail() != null) {
+            Usuario programador = usuarioRepository.findByEmail(request.programadorEmail())
+                    .orElseThrow(() -> new RuntimeException("Programador no encontrado"));
+            asesoria.setProgramador(programador);
+        }
+        if (request.fechaHoraInicio() != null) {
+            asesoria.setFechaHoraInicio(request.fechaHoraInicio());
+        }
+        if (request.motivoConsulta() != null) {
+            asesoria.setMotivoConsulta(request.motivoConsulta());
+        }
+        if (request.duracionMinutos() != null) {
+            asesoria.setDuracionMinutos(request.duracionMinutos());
+        }
+
+        return mapToResponse(asesoriaRepository.save(asesoria));
+    }
+
+    @Override
+    @Transactional
     public void eliminarAsesoria(Integer id) {
         asesoriaRepository.deleteById(id);
     }

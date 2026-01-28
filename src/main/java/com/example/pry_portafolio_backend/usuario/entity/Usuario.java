@@ -35,7 +35,7 @@ public class Usuario implements UserDetails {
     @Column(name = "usu_email", nullable = false, length = 100, unique = true)
     private String email;
 
-    @Column(name = "usu_password", nullable = false, length = 200)
+    @Column(name = "usu_password", nullable = true, length = 200)
     private String password;
 
     @CreationTimestamp
@@ -51,35 +51,9 @@ public class Usuario implements UserDetails {
     private Role rol;
 
 
-
-    public static UsuarioBuilder builder() {
-        return new UsuarioBuilder();
-    }
-
-    public static class UsuarioBuilder {
-        private String nombre;
-        private String apellido;
-        private String email;
-        private String password;
-        private Role rol;
-
-        public UsuarioBuilder nombre(String nombre) { this.nombre = nombre; return this; }
-        public UsuarioBuilder apellido(String apellido) { this.apellido = apellido; return this; }
-        public UsuarioBuilder email(String email) { this.email = email; return this; }
-        public UsuarioBuilder password(String password) { this.password = password; return this; }
-        public UsuarioBuilder rol(Role rol) { this.rol = rol; return this; }
-        public Usuario build() {
-            Usuario u = new Usuario();
-            u.setNombre(nombre);
-            u.setApellido(apellido);
-            u.setEmail(email);
-            u.setPassword(password);
-            u.setRol(rol);
-            return u;
-        }
-    }
-
-
+    @Enumerated(EnumType.STRING)
+    @Column(name = "usu_auth_provider", nullable = false, length = 20)
+    private AuthProvider authProvider;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -87,12 +61,19 @@ public class Usuario implements UserDetails {
     }
 
     @Override
-    public String getPassword() {
-        return password;
+    public String getUsername() {
+        return email;
     }
 
     @Override
-    public String getUsername() {
-        return this.email;
-    }
+    public boolean isAccountNonExpired() { return true; }
+
+    @Override
+    public boolean isAccountNonLocked() { return true; }
+
+    @Override
+    public boolean isCredentialsNonExpired() { return true; }
+
+    @Override
+    public boolean isEnabled() { return true; }
 }

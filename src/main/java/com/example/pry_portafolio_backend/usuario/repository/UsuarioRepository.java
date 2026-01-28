@@ -10,9 +10,10 @@ import java.util.OptionalInt;
 public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
     Optional<Usuario> findByEmail(String email);
-
-    Optional<Usuario> findById(Integer id);
-
     boolean existsByEmail(String email);
+    //Ya se incluye todo esto en JPA (No es necesario pero tampoco duele tenerlo)
+    //Optional<Usuario> findById(Integer id);
+
+
 
 }
