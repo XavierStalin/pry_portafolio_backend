@@ -40,6 +40,7 @@ public class AuthService {
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
                 .rol(Role.USER)
+                .authProvider(AuthProvider.LOCAL)
                 .build();
 
         var savedUser = userRepository.save(user);

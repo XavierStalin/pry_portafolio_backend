@@ -3,6 +3,8 @@ package com.example.pry_portafolio_backend.usuario.dto;
 public record UsuarioResponse(
         String nombre,
         String apellido,
-        String email
+        String email,
+        String rol,
+        String authProvider
 ) {
 }

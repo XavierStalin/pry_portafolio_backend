@@ -96,7 +96,9 @@ public class UsuarioServiceImpl implements UsuarioService {
         return new UsuarioResponse(
                 usuario.getNombre(),
                 usuario.getApellido(),
-                usuario.getEmail()
+                usuario.getEmail(),
+                usuario.getRol().toString(),
+                usuario.getAuthProvider().toString()
         );
     }
 }
